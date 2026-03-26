@@ -3,8 +3,9 @@ package HW_01;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SimpleHashMap<K, V> {
+public class SimpleHashMap<K, V> implements MyHashMap<K, V> {
     private static final int INITIAL_CAPACITY = 16;
+    private static final int EXPANSION_COEFF = 2;
     private int capacity = INITIAL_CAPACITY;
     private int size = 0;
 
@@ -44,11 +45,13 @@ public class SimpleHashMap<K, V> {
         }
     }
 
-    // Увеличиваем размер массива в 2 раза, если он заполнен
-    // и рехешируем содержимое
+    /**
+     * Если массив заполнен - увеличиваем его в EXPANSION_COEFF раз (= 2 по умолчнию)
+     * и рехешируем содержимое
+     */
     private void resize() {
         size = 0;
-        capacity *= 2;
+        capacity *= EXPANSION_COEFF;
 
         List<Entry<K, V>>[] newBuckets = (List<Entry<K, V>>[]) new List[capacity];
         for (int i = 0; i < capacity; i++) {
@@ -75,11 +78,11 @@ public class SimpleHashMap<K, V> {
         return null;
     }
 
-    // Удаление пары по ключу из bucket
     public void remove(K key) {
         int index = getIndex(key);
         List<Entry<K, V>> bucket = buckets[index];
-        bucket.removeIf(entry -> entry.key.equals(key));
+        boolean success = bucket.removeIf(entry -> entry.key.equals(key));
+        if (success) size--;
     }
 
     private static class Entry<K, V> {
@@ -90,22 +93,5 @@ public class SimpleHashMap<K, V> {
             this.key = key;
             this.value = value;
         }
-    }
-}
-
-class Test {
-    static void main() {
-        SimpleHashMap<Integer, Integer> map = new SimpleHashMap<>();
-
-        for (int i = 0; i < 24; i++) {
-            map.put(i, i + 10);
-        }
-
-        System.out.println(map.get(5));
-        map.remove(5);
-        System.out.println(map.get(5));
-        System.out.println(map.get(21));
-        System.out.println(map.get(25));
-
     }
 }
