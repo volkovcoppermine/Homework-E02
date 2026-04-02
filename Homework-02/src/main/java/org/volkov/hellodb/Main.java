@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.volkov.hellodb.dao.Dao;
 import org.volkov.hellodb.dao.UserDao;
-import org.volkov.hellodb.model.User;
+import org.volkov.hellodb.model.UserEntity;
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class Main {
 
     static void main() {
         Scanner in = new Scanner(System.in);
-        Dao<User> userDao = new UserDao();
+        Dao<UserEntity> userDao = new UserDao();
 
         boolean exit_flag = false;
         while (!exit_flag) {
@@ -43,7 +43,7 @@ public class Main {
         }
     }
 
-    private static Optional<User> parse(String input) {
+    private static Optional<UserEntity> parse(String input) {
         String[] tokens = input.split(";");
         if (tokens.length != 3) {
             LOGGER.warn("Ошибка при разборе строки: {}", input);
@@ -61,7 +61,7 @@ public class Main {
             age = 0;
         }
 
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setName(tokens[0]);
         user.setAge(age);
         user.setEmail(tokens[2]);
@@ -70,21 +70,21 @@ public class Main {
         return Optional.of(user);
     }
 
-    private static void createUser(Dao<User> userDao, Scanner in) {
+    private static void createUser(Dao<UserEntity> userDao, Scanner in) {
         in.nextLine();
         System.out.print("Введите данные пользователя: ");
 
         String input = in.nextLine();
-        Optional<User> opt = parse(input);
+        Optional<UserEntity> opt = parse(input);
         opt.ifPresent(userDao::create);
     }
 
-    private static Optional<User> getUser(Dao<User> userDao, Scanner in) {
+    private static Optional<UserEntity> getUser(Dao<UserEntity> userDao, Scanner in) {
         in.nextLine();
         System.out.print("Введите id: ");
 
         long id = in.nextLong();
-        Optional<User> opt = userDao.get(id);
+        Optional<UserEntity> opt = userDao.get(id);
         if (opt.isEmpty())
             System.out.println("Запись не найдена");
         else
@@ -93,18 +93,18 @@ public class Main {
         return opt;
     }
 
-    private static void updateUser(Dao<User> userDao, Scanner in){
-        Optional<User> opt = getUser(userDao, in);
+    private static void updateUser(Dao<UserEntity> userDao, Scanner in){
+        Optional<UserEntity> opt = getUser(userDao, in);
         if (opt.isEmpty())
             return;
 
         in.nextLine();
-        Optional<User> newOpt = parse(in.nextLine());
+        Optional<UserEntity> newOpt = parse(in.nextLine());
         if (newOpt.isEmpty())
             return;
 
-        User user = opt.get();
-        User newUser = newOpt.get();
+        UserEntity user = opt.get();
+        UserEntity newUser = newOpt.get();
 
         newUser.setId(user.getId());
         newUser.setCreated_at(user.getCreated_at());
@@ -112,8 +112,8 @@ public class Main {
         userDao.update(newUser);
     }
 
-    private static void deleteUser(Dao<User> userDao, Scanner in){
-        Optional<User> opt = getUser(userDao, in);
+    private static void deleteUser(Dao<UserEntity> userDao, Scanner in){
+        Optional<UserEntity> opt = getUser(userDao, in);
         if (opt.isEmpty())
             return;
 

@@ -1,12 +1,17 @@
 package org.volkov.hellodb.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.GenerationType;
 
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -22,7 +27,6 @@ public class User {
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime created_at;
-
 
     public String getName() {
         return name;
