@@ -13,7 +13,9 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserDaoTest extends AbstractDaoTest {
@@ -109,6 +111,12 @@ class UserDaoTest extends AbstractDaoTest {
     @Test
     @Order(5)
     void testGetAll() {
+        createTestUsers();
+        List<UserEntity> users = userDao.getAll();
+        assertFalse(users.isEmpty());
+    }
+
+    private static void createTestUsers() {
         for (int i = 1; i <= 5; i++) {
             UserEntity user = new UserEntity();
             user.setName(String.format("Test %d", i));
@@ -117,7 +125,5 @@ class UserDaoTest extends AbstractDaoTest {
             user.setCreated_at(OffsetDateTime.now());
             assertTrue(userDao.create(user));
         }
-        List<UserEntity> users = userDao.getAll();
-        assertFalse(users.isEmpty());
     }
 }

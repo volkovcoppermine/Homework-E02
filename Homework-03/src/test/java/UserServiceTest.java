@@ -1,16 +1,18 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.volkov.hellotest.dao.UserDao;
 import org.volkov.hellotest.entity.UserEntity;
-import org.volkov.hellotest.service.UserService;
 import org.volkov.hellotest.service.UserServiceImpl;
 
 import java.util.Optional;
@@ -20,15 +22,13 @@ public class UserServiceTest {
     @Mock
     private UserDao userDaoMock;
 
-    private UserService userService;
+    @InjectMocks
+    private UserServiceImpl userService;
 
     private UserEntity testUser;
 
     @BeforeEach
     void setup() {
-        userDaoMock = mock(UserDao.class);
-        userService = new UserServiceImpl(userDaoMock);
-
         testUser = new UserEntity();
         testUser.setId(1L);
         testUser.setName("Тест");
@@ -38,13 +38,18 @@ public class UserServiceTest {
     @Test
     void testCreateUser_ShouldCallDaoCreate() {
         userService.createUser(testUser);
-        verify(userDaoMock, times(1)).create(testUser);
+        verify(userDaoMock).create(testUser);
     }
 
     @Test
     void testGetUserById_UserExists_ShouldReturnUser() {
+        // Arrange
         when(userDaoMock.get(1L)).thenReturn(Optional.of(testUser));
+
+        // Act
         Optional<UserEntity> result = userService.getUserById(1L);
+
+        // Assert
         assertTrue(result.isPresent());
         assertEquals("Тест", result.get().getName());
         verify(userDaoMock).get(1L);
@@ -52,18 +57,28 @@ public class UserServiceTest {
 
     @Test
     void testGetUserById_UserDoesNotExist_ShouldReturnEmpty() {
+        // Arrange
         when(userDaoMock.get(999L)).thenReturn(Optional.empty());
+
+        // Act
         Optional<UserEntity> result = userService.getUserById(999L);
+
+        // Assert
         assertTrue(result.isEmpty());
         verify(userDaoMock).get(999L);
     }
 
     @Test
     void testUpdateUser_ShouldReturnUpdatedUser() {
+        // Arrange
         when(userDaoMock.get(1L)).thenReturn(Optional.of(testUser));
         testUser.setName("Вася");
+
+        // Act
         userService.updateUser(testUser);
-        verify(userDaoMock, times(1)).update(testUser);
+
+        // Assert
+        verify(userDaoMock).update(testUser);
         Optional<UserEntity> result = userService.getUserById(1L);
         assertTrue(result.isPresent());
         assertEquals("Вася", result.get().getName());
@@ -71,9 +86,14 @@ public class UserServiceTest {
 
     @Test
     void testDeleteUser_ShouldReturnEmpty() {
+        // Arrange
         when(userDaoMock.get(1L)).thenReturn(Optional.empty());
+
+        // Act
         userService.deleteUser(testUser);
-        verify(userDaoMock, times(1)).delete(testUser);
+
+        // Asert
+        verify(userDaoMock).delete(testUser);
         Optional<UserEntity> result = userService.getUserById(1L);
         assertTrue(result.isEmpty());
     }
