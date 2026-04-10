@@ -1,0 +1,7 @@
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.hbm2ddl.auto">create-drop</property>
+        <mapping class="org.volkov.hellotest.entity.UserEntity"/>
+    </session-factory>
+</hibernate-configuration>
