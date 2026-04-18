@@ -14,8 +14,11 @@ import java.time.OffsetDateTime;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(classes = HelloSpring.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -27,12 +30,11 @@ class UserControllerMockMvcTest {
     @MockitoBean // Имитация сервиса
     private UserService userService;
 
-    @Autowired
-    private JsonMapper objectMapper = JsonMapper.builder().build(); // Для преобразования DTO в JSON
+    private final JsonMapper objectMapper = JsonMapper.builder().build(); // Для преобразования DTO в JSON
 
     @Test
     void getUserById_ShouldReturnUser() throws Exception {
-        // Arrange: Настраиваем поведение mock-сервиса
+        // Arrange
         UserEntityDto dto = new UserEntityDto("Тест", "test@mail.ru", 25, OffsetDateTime.now());
         when(userService.getUserById(1L)).thenReturn(dto);
 
