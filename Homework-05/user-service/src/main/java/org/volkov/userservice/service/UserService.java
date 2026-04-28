@@ -3,6 +3,7 @@ package org.volkov.userservice.service;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.volkov.userservice.dto.MessageWithType;
 import org.volkov.userservice.dto.UserDto;
 import org.volkov.userservice.entity.User;
 import org.volkov.userservice.repository.UserRepository;
@@ -27,7 +28,7 @@ public class UserService {
                 .createdAt(OffsetDateTime.now())
                 .build();
 
-        messageProducer.sendMessage("user-created-topic", user.getEmail());
+        messageProducer.sendMessage("notification-topic", new MessageWithType("Created", user.getEmail()));
 
         return userRepository.save(user);
     }
@@ -57,7 +58,7 @@ public class UserService {
 
     public void delete(Long id) {
         User user = userRepository.getReferenceById(id);
-        messageProducer.sendMessage("user-deleted-topic", user.getEmail());
+        messageProducer.sendMessage("notification-topic", new MessageWithType("Deleted", user.getEmail()));
 
         userRepository.deleteById(id);
     }
